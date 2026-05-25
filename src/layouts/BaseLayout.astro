@@ -1,0 +1,163 @@
+---
+import "~/styles/global.css";
+import { profile } from "~/data/profile";
+import SiteHeader from "~/components/SiteHeader.astro";
+import { withBase } from "~/utils/assets";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const title = Astro.props.title ?? `${profile.name} | ${profile.title}`;
+const description = Astro.props.description ?? profile.description;
+const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0d0d0c" />
+    <link rel="canonical" href={canonical} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={withBase("/assets/work/between/artboard-2400x-6.webp")} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@500;700&display=swap"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#work">跳到作品 / Skip to work</a>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
+    <SiteHeader />
+    <aside class="rail" aria-hidden="true">
+      <span class="rail__brand">JS — 孙涵之</span>
+      <ol class="rail__index">
+        <li><a href="#top" data-rail-target="top"><i>00</i><b>Profile</b></a></li>
+        <li><a href="#work" data-rail-target="work"><i>—</i><b>Index</b></a></li>
+        <li><a href="#between" data-rail-target="between"><i>01</i><b>Between</b></a></li>
+        <li><a href="#gravel" data-rail-target="gravel"><i>02</i><b>Gravel</b></a></li>
+        <li><a href="#archive" data-rail-target="archive"><i>03</i><b>Archive</b></a></li>
+        <li><a href="#synthesis" data-rail-target="synthesis"><i>04</i><b>Synthesis</b></a></li>
+        <li><a href="#form" data-rail-target="form"><i>05</i><b>Form</b></a></li>
+        <li><a href="#sentinel" data-rail-target="sentinel"><i>06</i><b>Sentinel</b></a></li>
+      </ol>
+      <span class="rail__year">2024 / 2026</span>
+    </aside>
+    <main>
+      <slot />
+    </main>
+    <footer class="site-foot">
+      <div class="site-foot__row">
+        <span class="mono">© {new Date().getFullYear()} {profile.name} · {profile.fullName}</span>
+        <span class="mono">{profile.title} · {profile.yearRange}</span>
+      </div>
+      <div class="site-foot__row">
+        <span class="mono">Toronto · Shanghai · Marshall Islands</span>
+        <a class="mono" href={`mailto:${profile.email}`}>{profile.email}</a>
+      </div>
+    </footer>
+    <dialog class="lightbox" aria-label="Image preview">
+      <button type="button" class="lightbox__close" aria-label="Close image preview">
+        <span class="mono">Close</span>
+        <span aria-hidden="true">×</span>
+      </button>
+      <figure>
+        <img alt="" />
+        <figcaption class="mono"></figcaption>
+      </figure>
+    </dialog>
+    <script>
+      const dialog = document.querySelector(
+        "dialog.lightbox",
+      ) as HTMLDialogElement | null;
+      const dialogImage = dialog?.querySelector("img") as HTMLImageElement | null;
+      const dialogCaption = dialog?.querySelector("figcaption") as HTMLElement | null;
+      const closeButton = dialog?.querySelector(".lightbox__close");
+
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLImageElement)) return;
+        const figure = target.closest("[data-zoom]");
+        if (!figure) return;
+        if (!dialog || !dialogImage || typeof dialog.showModal !== "function") return;
+        dialogImage.src = target.currentSrc || target.src;
+        dialogImage.alt = target.alt;
+        if (dialogCaption) {
+          const caption = figure.getAttribute("data-caption") || target.alt;
+          dialogCaption.textContent = caption;
+        }
+        dialog.showModal();
+      });
+
+      closeButton?.addEventListener("click", () => dialog?.close());
+      dialog?.addEventListener("click", (event) => {
+        if (event.target === dialog) {
+          dialog.close();
+        }
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && dialog?.open) dialog.close();
+      });
+
+      const progress = document.querySelector(
+        ".scroll-progress span",
+      ) as HTMLElement | null;
+      const updateProgress = () => {
+        if (!progress) return;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+        progress.style.transform = `scaleX(${pct / 100})`;
+      };
+      window.addEventListener("scroll", updateProgress, { passive: true });
+      window.addEventListener("resize", updateProgress);
+      updateProgress();
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            document
+              .querySelectorAll("[data-nav-target],[data-rail-target]")
+              .forEach((link) => link.removeAttribute("aria-current"));
+            const id = entry.target.id;
+            document
+              .querySelectorAll(
+                `[data-nav-target="${id}"],[data-rail-target="${id}"]`,
+              )
+              .forEach((link) => link.setAttribute("aria-current", "true"));
+          }
+        },
+        { rootMargin: "-40% 0px -50% 0px", threshold: 0.01 },
+      );
+
+      document
+        .querySelectorAll("section[id]")
+        .forEach((section) => observer.observe(section));
+
+      const reveal = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.setAttribute("data-revealed", "true");
+            reveal.unobserve(entry.target);
+          }
+        },
+        { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
+      );
+      document
+        .querySelectorAll("[data-reveal]")
+        .forEach((node) => reveal.observe(node));
+    </script>
+  </body>
+</html>

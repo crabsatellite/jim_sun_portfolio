@@ -1,0 +1,131 @@
+---
+import type { PortfolioProject } from "~/data/projects";
+import { mediaByProject, type MediaAsset } from "~/data/media.generated";
+import { withBase } from "~/utils/assets";
+
+interface Props {
+  project: PortfolioProject;
+  nextProject?: PortfolioProject | null;
+}
+
+const { project, nextProject } = Astro.props;
+const mediaLookup = mediaByProject as Record<string, MediaAsset[]>;
+const media = mediaLookup[project.id] ?? [];
+const cover = media[0];
+const gallery = media.slice(1);
+
+function mediaClass(asset: MediaAsset, idx: number): string {
+  const ratio = asset.width / asset.height;
+  const classes = ["case-media"];
+  if (ratio > 1.55) classes.push("case-media--wide");
+  else if (ratio < 0.82) classes.push("case-media--tall");
+  if (idx > 0 && (idx + 1) % 7 === 0 && ratio > 1.4) {
+    classes.push("case-media--feature");
+  }
+  return classes.join(" ");
+}
+
+function fig(idx: number): string {
+  return `Fig. ${project.no}.${String(idx + 1).padStart(2, "0")}`;
+}
+---
+
+<section
+  class:list={["case", `case--${project.tone}`]}
+  id={project.id}
+  aria-labelledby={`${project.id}-title`}
+>
+  <header class="case__mast" data-reveal>
+    <div class="case__label">
+      <span class="no">{project.no}</span>
+      <span>Project · 项目</span>
+      <span class="zh">{project.titleZh}</span>
+    </div>
+    <div class="case__headline">
+      <h2 id={`${project.id}-title`}>{project.title}</h2>
+      <p>{project.summary}</p>
+      <p class="zh">{project.summaryZh}</p>
+    </div>
+  </header>
+
+  {
+    cover && (
+      <figure class="case-cover" data-zoom data-caption={`${fig(0)} — ${project.title}`} data-reveal>
+        <img
+          src={withBase(cover.path)}
+          alt={`${project.title} primary visual`}
+          width={cover.width}
+          height={cover.height}
+          loading="lazy"
+        />
+        <figcaption>{fig(0)} / Cover</figcaption>
+      </figure>
+    )
+  }
+
+  <div class="case__body" data-reveal>
+    <aside class="case__meta">
+      <dl>
+        {
+          project.meta.map(([label, value]) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))
+        }
+        <div>
+          <dt>Index</dt>
+          <dd>{project.no} / 06</dd>
+        </div>
+      </dl>
+    </aside>
+
+    <div class="case__narrative">
+      <div class="case__narrative-en">
+        <h4>Narrative · EN</h4>
+        {project.body.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+      <div class="case__narrative-zh">
+        <h4>叙述 · 中文</h4>
+        {project.bodyZh.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+  </div>
+
+  <div class="case-gallery" aria-label={`${project.title} linked InDesign assets`} data-reveal>
+    {
+      gallery.map((asset, index) => (
+        <figure
+          class={mediaClass(asset, index)}
+          data-zoom
+          data-caption={`${fig(index + 1)} — ${project.title}`}
+        >
+          <img
+            src={withBase(asset.path)}
+            alt={`${project.title} asset ${index + 1}`}
+            width={asset.width}
+            height={asset.height}
+            loading="lazy"
+          />
+          <figcaption>{fig(index + 1)}</figcaption>
+        </figure>
+      ))
+    }
+  </div>
+
+  <div class="case__footer">
+    <span>End of {project.no} · {project.title}</span>
+    {
+      nextProject ? (
+        <a class="next" href={`#${nextProject.id}`}>
+          Next · {nextProject.no} {nextProject.title}
+        </a>
+      ) : (
+        <a class="next" href="#contact">
+          Next · Contact
+        </a>
+      )
+    }
+  </div>
+</section>

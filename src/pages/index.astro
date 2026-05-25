@@ -1,0 +1,249 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import ProjectSection from "~/components/ProjectSection.astro";
+import { profile } from "~/data/profile";
+import { projects } from "~/data/projects";
+import { mediaByProject } from "~/data/media.generated";
+import { withBase } from "~/utils/assets";
+
+const introIds = ["between", "gravel", "sentinel"] as const;
+const introMedia = introIds
+  .map((id) => {
+    const project = projects.find((p) => p.id === id);
+    const asset = mediaByProject[id]?.[0];
+    return project && asset ? { project, asset } : null;
+  })
+  .filter((entry): entry is { project: typeof projects[number]; asset: typeof mediaByProject[typeof introIds[number]][number] } => entry !== null);
+
+const featuredProjects = projects.slice(0, 3);
+
+const marqueeWords = [
+  "Toronto",
+  "Bloomingdale",
+  "Xishuangbanna",
+  "Marshall Islands",
+  "Architecture",
+  "Landscape",
+  "Memorial",
+  "Material",
+  "Ecology",
+  "Studio 2024 — 2026",
+];
+
+const heroLocators = [
+  { label: "Lat", value: "43.66 °N" },
+  { label: "Studio", value: "Toronto · Shanghai" },
+  { label: "Years", value: profile.yearRange },
+  { label: "Pages", value: "06 / Works" },
+];
+
+function splitEducation(line: string): { school: string; rest: string } {
+  const [school, ...rest] = line.split(",");
+  return { school: school.trim(), rest: rest.join(",").trim() };
+}
+---
+
+<BaseLayout title={`${profile.name} | ${profile.title} ${profile.yearRange}`}>
+  <section class="intro" id="top" aria-labelledby="intro-title">
+    <div class="intro__crosshair" aria-hidden="true"></div>
+    <div class="intro__inner">
+      <div class="intro__top" data-reveal>
+        <ul class="intro__locator" aria-label="Portfolio metadata">
+          {
+            heroLocators.map((item) => (
+              <li>
+                <span class="mono">{item.label}</span>
+                <strong>{item.value}</strong>
+              </li>
+            ))
+          }
+        </ul>
+        <h1 id="intro-title">
+          <span class="intro__name-en">Jim Sun</span>
+          <span class="intro__name-zh">孙涵之</span>
+        </h1>
+        <p class="intro__lede">
+          A restrained <em>monograph</em> for architectural work that traverses abstraction, landscape systems, rural public rooms, material experiments, and memorial infrastructure — assembled from the studio years <em>2024 – 2026</em>.
+        </p>
+        <div class="intro__actions" aria-label="Primary actions">
+          <a class="btn btn--primary" href="#work">View Six Works</a>
+          <a class="btn" href={withBase("/assets/Jim-Sun-Architecture-Portfolio.pdf")}>
+            Download PDF
+          </a>
+          <a class="btn" href="#contact">Contact</a>
+        </div>
+      </div>
+
+      <div class="intro__stage" aria-label="Selected portfolio work previews" data-reveal>
+        <p class="intro__stamp" aria-hidden="true">24<span style="font-style:normal;font-family:var(--font-mono);font-size:0.4em;vertical-align:0.6em;margin:0 0.06em;">/</span>26</p>
+        {
+          introMedia.map(({ project, asset }, index) => {
+            const fig = `Fig. ${String(index + 1).padStart(2, "0")}`;
+            return (
+              <figure
+                class:list={["intro-shot", `intro-shot--${index + 1}`]}
+                data-zoom
+                data-fig={`${fig} / ${project.title}`}
+                data-caption={`${fig} — ${project.title}`}
+              >
+                <img
+                  src={withBase(asset.path)}
+                  alt={`${project.title} preview`}
+                  width={asset.width}
+                  height={asset.height}
+                  loading="eager"
+                />
+              </figure>
+            );
+          })
+        }
+      </div>
+    </div>
+
+    <div class="intro__marquee" aria-hidden="true">
+      <div class="intro__marquee-track">
+        {marqueeWords.map((w) => <span>{w}</span>)}
+        {marqueeWords.map((w) => <span>{w}</span>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="resume" id="resume" aria-labelledby="resume-title">
+    <p class="section-kicker">00 / Profile · 简介</p>
+    <div class="resume__statement" data-reveal>
+      <h2 id="resume-title">
+        <em>Architectural research</em> shaped by an illustration mind.
+        <span class="zh">建筑研究生与插画背景交叉的空间设计者</span>
+      </h2>
+      <p>
+        多伦多大学 M.Arch 建筑研究生，纽约视觉艺术学院 BFA 插画背景。作品集中可以看到从抽象几何、生态地貌、乡村公共空间到纪念性基础设施的连续探索。
+      </p>
+    </div>
+    <div class="resume__grid" data-reveal>
+      <article data-no="01">
+        <h3>Education</h3>
+        {
+          profile.education.map((item) => {
+            const { school, rest } = splitEducation(item);
+            return (
+              <p>
+                <strong>{school}</strong>
+                <span>{rest}</span>
+              </p>
+            );
+          })
+        }
+      </article>
+      <article data-no="02">
+        <h3>Practice</h3>
+        {
+          profile.practice.map((item) => {
+            const { school, rest } = splitEducation(item);
+            return (
+              <p>
+                <strong>{school}</strong>
+                <span>{rest}</span>
+              </p>
+            );
+          })
+        }
+      </article>
+      <article data-no="03">
+        <h3>Making</h3>
+        <p>
+          <span>{profile.making}</span>
+        </p>
+      </article>
+      <article data-no="04">
+        <h3>Software</h3>
+        <p>
+          <span>{profile.software}</span>
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="work-intro" id="work" aria-labelledby="work-title">
+    <p class="section-kicker">Index / 作品索引</p>
+    <div class="work-intro__head" data-reveal>
+      <h2 id="work-title">
+        <em>Six selected studies,</em> rebuilt from the InDesign monograph as <b>native web cases</b>.
+      </h2>
+      <p>
+        The original PDF remains the reference artifact. This site re-renders the work as readable narratives, large image moments, and dense process spreads — so each project can be read at full breath.
+      </p>
+    </div>
+
+    <div class="featured-strip" aria-label="Featured projects" data-reveal>
+      {
+        featuredProjects.map((project) => {
+          const media = mediaByProject[project.id as keyof typeof mediaByProject][0];
+          return (
+            <a class="featured-work" href={`#${project.id}`} data-nav-target={project.id}>
+              <div class="featured-work__media">
+                <img
+                  src={withBase(media.path)}
+                  alt={`${project.title} preview`}
+                  width={media.width}
+                  height={media.height}
+                  loading="lazy"
+                />
+              </div>
+              <div class="featured-work__caption">
+                <span class="num">{project.no}</span>
+                <strong>{project.title}</strong>
+                <em>{project.titleZh}</em>
+              </div>
+            </a>
+          );
+        })
+      }
+    </div>
+
+    <ol class="index-list" data-reveal>
+      {
+        projects.map((project) => (
+          <li>
+            <a href={`#${project.id}`} data-nav-target={project.id}>
+              <span class="num">{project.no}</span>
+              <strong>{project.title}</strong>
+              <em>{project.titleZh}</em>
+              <span class="read">Read →</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <div class="case-stack">
+    {
+      projects.map((project, idx) => (
+        <ProjectSection
+          project={project}
+          nextProject={projects[idx + 1] ?? null}
+        />
+      ))
+    }
+  </div>
+
+  <section class="closing" id="contact" aria-label="Contact">
+    <div class="closing__panel" data-reveal>
+      <p class="kicker">07 / Contact · 联系</p>
+      <h2>
+        Write to me at <a href={`mailto:${profile.email}`}>{profile.email}</a>
+      </h2>
+      <div class="closing__details">
+        <span>{profile.phone}</span>
+        <span>Toronto · Shanghai</span>
+        <span>Open to studio & research collaborations</span>
+      </div>
+      <div class="closing__actions">
+        <a class="btn btn--primary" href={withBase("/assets/Jim-Sun-Architecture-Portfolio.pdf")}>
+          Download PDF Monograph
+        </a>
+        <a class="btn" href={`mailto:${profile.email}`}>Send Email</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

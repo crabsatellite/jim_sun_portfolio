@@ -1,0 +1,20 @@
+{
+  "name": "jim-sun-portfolio",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/astro-cli.mjs dev",
+    "start": "node scripts/astro-cli.mjs dev",
+    "build": "node scripts/astro-cli.mjs build",
+    "preview": "node scripts/astro-cli.mjs preview",
+    "check": "node scripts/astro-cli.mjs check"
+  },
+  "dependencies": {
+    "astro": "^5.8.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.8.3"
+  }
+}
