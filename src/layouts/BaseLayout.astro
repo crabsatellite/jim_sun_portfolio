@@ -41,7 +41,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <div class="scroll-progress" aria-hidden="true"><span></span></div>
     <SiteHeader />
     <aside class="rail" aria-hidden="true">
-      <span class="rail__brand"><span>JS — 孙涵之</span></span>
+      <span class="rail__brand">JS · 孙涵之</span>
       <ol class="rail__index">
         <li><a href="#top" data-rail-target="top"><i>00</i><b>Profile</b></a></li>
         <li><a href="#work" data-rail-target="work"><i>—</i><b>Index</b></a></li>
@@ -52,7 +52,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
         <li><a href="#form" data-rail-target="form"><i>05</i><b>Form</b></a></li>
         <li><a href="#sentinel" data-rail-target="sentinel"><i>06</i><b>Sentinel</b></a></li>
       </ol>
-      <span class="rail__year">2024 / 2026</span>
+      <span class="rail__year">{profile.startYear} / {profile.endYear}</span>
     </aside>
     <main>
       <slot />

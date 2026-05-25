@@ -372,6 +372,7 @@ body::after {
     align-items: center;
     justify-items: center;
     padding: 1.4rem 0;
+    overflow: hidden;
     border-left: 1px solid var(--line);
     background: linear-gradient(
       to left,
@@ -382,31 +383,18 @@ body::after {
   }
 
   .rail__brand,
-  .rail__year,
-  .rail__brand > span {
+  .rail__year {
+    writing-mode: vertical-rl;
+    text-orientation: sideways;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.18em;
+    line-height: 1;
     color: var(--ink-mute);
-  }
-
-  .rail__brand {
-    width: 1rem;
-    height: 7.7rem;
-    display: grid;
-    place-items: center;
-  }
-
-  .rail__brand > span {
-    display: block;
     white-space: nowrap;
-    transform: rotate(90deg);
-    transform-origin: center;
-  }
-
-  .rail__year {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
+    max-block-size: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-transform: uppercase;
   }
 

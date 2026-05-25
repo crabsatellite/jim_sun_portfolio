@@ -17,6 +17,9 @@ const introMedia = introIds
 
 const featuredProjects = projects.slice(0, 3);
 
+const startShort = String(profile.startYear).slice(-2);
+const endShort = String(profile.endYear).slice(-2);
+
 const marqueeWords = [
   "Toronto",
   "Bloomingdale",
@@ -27,7 +30,7 @@ const marqueeWords = [
   "Memorial",
   "Material",
   "Ecology",
-  "Studio 2024 — 2026",
+  `Studio ${profile.startYear} — ${profile.endYear}`,
 ];
 
 const heroLocators = [
@@ -63,7 +66,7 @@ function splitEducation(line: string): { school: string; rest: string } {
           <span class="intro__name-zh">孙涵之</span>
         </h1>
         <p class="intro__lede">
-          A restrained <em>monograph</em> for architectural work that traverses abstraction, landscape systems, rural public rooms, material experiments, and memorial infrastructure — assembled from the studio years <em>2024 – 2026</em>.
+          A restrained <em>monograph</em> for architectural work that traverses abstraction, landscape systems, rural public rooms, material experiments, and memorial infrastructure — assembled from the studio years <em>{profile.startYear} – {profile.endYear}</em>.
         </p>
         <div class="intro__actions" aria-label="Primary actions">
           <a class="btn btn--primary" href="#work">View Six Works</a>
@@ -75,7 +78,7 @@ function splitEducation(line: string): { school: string; rest: string } {
       </div>
 
       <div class="intro__stage" aria-label="Selected portfolio work previews" data-reveal>
-        <p class="intro__stamp" aria-hidden="true">24<span style="font-style:normal;font-family:var(--font-mono);font-size:0.4em;vertical-align:0.6em;margin:0 0.06em;">/</span>26</p>
+        <p class="intro__stamp" aria-hidden="true">{startShort}<span style="font-style:normal;font-family:var(--font-mono);font-size:0.4em;vertical-align:0.6em;margin:0 0.06em;">/</span>{endShort}</p>
         {
           introMedia.map(({ project, asset }, index) => {
             const fig = `Fig. ${String(index + 1).padStart(2, "0")}`;
