@@ -382,14 +382,32 @@ body::after {
   }
 
   .rail__brand,
-  .rail__year {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
+  .rail__year,
+  .rail__brand > span {
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.18em;
-    text-transform: uppercase;
     color: var(--ink-mute);
+  }
+
+  .rail__brand {
+    width: 1rem;
+    height: 7.7rem;
+    display: grid;
+    place-items: center;
+  }
+
+  .rail__brand > span {
+    display: block;
+    white-space: nowrap;
+    transform: rotate(90deg);
+    transform-origin: center;
+  }
+
+  .rail__year {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-transform: uppercase;
   }
 
   .rail__index {
